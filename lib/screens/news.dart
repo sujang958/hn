@@ -30,10 +30,7 @@ class NewsScreenState extends State<NewsScreen> {
                 largeTitle: Text(
                   "Top Stories",
                   style: baseTextStyle.copyWith(
-                    fontVariations: [
-                      FontVariation(
-                          'wght', 700)
-                    ],
+                    fontVariations: [FontVariation('wght', 700)],
                   ),
                 ),
               ),
@@ -42,28 +39,25 @@ class NewsScreenState extends State<NewsScreen> {
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) => Padding(
-                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                    child: Column(
-                    children: [
-                      CupertinoListTile(
-                        title: Text(
-                          "Bard: an AI by Google",
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-maxLines: 3,
-                          style: baseTextStyle.copyWith(
-                              fontSize: 22.0, fontWeight: FontWeight.bold, height: 1.4),
-                        ),
-                        subtitle: Text(
-                          "google.com\n4 comments | 4 points | posted by someone",
-                          maxLines: 3,
-                          style: TextStyle(fontSize: 14.0),
-                        ),
-                        backgroundColorActivated: Colors.white60,
-                      ),
-                      Divider(),
-                    ],
+                  (BuildContext context, int index) => Material(
+                      child: ListTile(
+                        minVerticalPadding: 5.0,
+                        tileColor: Colors.black,
+                    title: Text(
+                      "Bard: an AI by Google",
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      style: baseTextStyle.copyWith(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          height: 1.4),
+                    ),
+                    subtitle: Text(
+                      "google.com\n4 comments | 4 points | posted by someone",
+                      maxLines: 3,
+                      style: TextStyle(fontSize: 14.0),
+                    ),
                   )),
                   childCount: 16,
                 ),
