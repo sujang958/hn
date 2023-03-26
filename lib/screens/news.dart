@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hn/screens/story.dart';
+import 'package:hn/models/storyModel.dart';
 import 'package:hn/widgets/baseText.dart';
 import 'package:hn/widgets/storyItem.dart';
 
@@ -16,6 +16,8 @@ class NewsScreen extends StatefulWidget {
 }
 
 class NewsScreenState extends State<NewsScreen> {
+  Future<List<int>> ids = fetchTopStories(count: 20);
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -33,19 +35,46 @@ class NewsScreenState extends State<NewsScreen> {
                   "Top Stories",
                   style: baseTextStyle.copyWith(
                     fontVariations: [FontVariation('wght', 700)],
+                    letterSpacing: 0.8
                   ),
                 ),
               ),
               CupertinoSliverRefreshControl(
-                onRefresh: () async {},
+                onRefresh: () async {
+                  ids = fetchTopStories();
+                },
               ),
               SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) => StoryItem(storyId: "3333",),
-                  childCount: 16,
-                ),
-              ),
+              FutureBuilder(
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return SliverToBoxAdapter(
+                      child: Text(
+                        "There was an error :(",
+                        style: baseTextStyle,
+                      ),
+                    );
+                  }
+
+                  if (!snapshot.hasData) {
+                    return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                            (context, index) => null));
+                  }
+
+                  final data = snapshot.data as List<int>;
+
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) => StoryItem(
+                        storyId: data[index],
+                      ),
+                      childCount: data.length,
+                    ),
+                  );
+                },
+                future: ids,
+              )
             ],
           )),
         ],
