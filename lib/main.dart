@@ -14,7 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Hacker News',
         themeMode: ThemeMode.dark,
-        theme: ThemeData(
+        debugShowCheckedModeBanner: false,
+        darkTheme: ThemeData(
           fontFamily: "Pretendard",
           brightness: Brightness.dark,
           scaffoldBackgroundColor: CupertinoColors.black,

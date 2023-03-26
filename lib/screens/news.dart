@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hn/screens/story.dart';
 import 'package:hn/widgets/baseText.dart';
 
 class NewsScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: Colors.black,
       child: Column(
         children: [
           Expanded(
@@ -24,9 +26,8 @@ class NewsScreenState extends State<NewsScreen> {
             physics: const BouncingScrollPhysics(),
             slivers: <Widget>[
               CupertinoSliverNavigationBar(
-                backgroundColor: Colors.black,
-                brightness: Brightness.dark,
                 transitionBetweenRoutes: true,
+                backgroundColor: Colors.black,
                 largeTitle: Text(
                   "Top Stories",
                   style: baseTextStyle.copyWith(
@@ -37,12 +38,18 @@ class NewsScreenState extends State<NewsScreen> {
               CupertinoSliverRefreshControl(
                 onRefresh: () async {},
               ),
+              SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) => Material(
-                      child: ListTile(
-                        minVerticalPadding: 5.0,
-                        tileColor: Colors.black,
+                      child: CupertinoListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => StoryScreen()));
+                    },
+                    backgroundColor: Colors.black,
                     title: Text(
                       "Bard: an AI by Google",
                       softWrap: true,
