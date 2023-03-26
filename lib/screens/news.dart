@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hn/screens/story.dart';
 import 'package:hn/widgets/baseText.dart';
+import 'package:hn/widgets/storyItem.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -41,31 +42,7 @@ class NewsScreenState extends State<NewsScreen> {
               SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) => Material(
-                      child: CupertinoListTile(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) => StoryScreen()));
-                    },
-                    backgroundColor: Colors.black,
-                    title: Text(
-                      "Bard: an AI by Google",
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
-                      style: baseTextStyle.copyWith(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          height: 1.4),
-                    ),
-                    subtitle: Text(
-                      "google.com\n4 comments | 4 points | posted by someone",
-                      maxLines: 3,
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                  )),
+                  (BuildContext context, int index) => StoryItem(storyId: "3333",),
                   childCount: 16,
                 ),
               ),
