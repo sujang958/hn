@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hn/models/commentModel.dart';
 import 'package:hn/widgets/baseText.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:url_launcher/url_launcher.dart';
 
 class CommentItem extends StatefulWidget {
   final int commentId;
@@ -52,23 +53,32 @@ class CommendItemState extends State<CommentItem> {
                     style: baseTextStyle.copyWith(
                         color: CupertinoColors.systemGrey2, fontSize: 14.0),
                   ),
-                  Html(
-                    data: comment.text,
-                    style: {
-                      "*": Style(
-                          padding: EdgeInsets.zero,
-                          margin: EdgeInsets.zero,
-                          fontSize: FontSize.rem(1.18),
-                          lineHeight: LineHeight.number(1.15)),
-                      "pre": Style(
-                          backgroundColor: CupertinoColors.darkBackgroundGray,
-                          width: double.infinity,
-                          margin: const EdgeInsets.symmetric(vertical: 10.0),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 4.0, horizontal: 0.2)),
-                      "anchor": Style(textDecoration: TextDecoration.none),
-                    },
-                  ),
+                  DefaultTextStyle(
+                      style: baseTextStyle,
+                      child: Html(
+                        data: comment.text,
+                        style: {
+                          "*": Style(
+                              padding: EdgeInsets.zero,
+                              margin: EdgeInsets.zero,
+                              fontSize: FontSize.rem(1.18),
+                              lineHeight: LineHeight.number(1.15)),
+                          "pre": Style(
+                              backgroundColor:
+                                  CupertinoColors.darkBackgroundGray,
+                              width: double.infinity,
+                              margin:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 0.2)),
+                          "anchor": Style(textDecoration: TextDecoration.none),
+                        },
+                        onLinkTap: (url, context, attributes, element) {
+                          if (url != null) {
+                            launchUrl(Uri.parse(url));
+                          }
+                        },
+                      )),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 4.0),
                   ),

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:hn/models/storyModel.dart';
 import 'package:hn/widgets/baseText.dart';
 import 'package:hn/widgets/commentItem.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class StoryScreen extends StatefulWidget {
   final Story story;
@@ -32,16 +34,40 @@ class StoryScreenState extends State<StoryScreen> {
       Expanded(
           child: CustomScrollView(physics: BouncingScrollPhysics(), slivers: [
         CupertinoSliverNavigationBar(
+          alwaysShowMiddle: false,
+          middle: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () async {
+                if (!await launchUrl(Uri.parse(story.url))) {
+                  return;
+                }
+              },
+              child: Text(
+                story.title,
+                style: baseTextStyle.copyWith(fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
           largeTitle: CupertinoButton(
-            onPressed: () {},
+            onPressed: () async {
+              if (!await launchUrl(Uri.parse(story.url))) {
+                return;
+              }
+            },
             padding: EdgeInsets.zero,
             alignment: Alignment.centerLeft,
             child: Text(
               story.title,
               style: baseTextStyle.copyWith(
                   fontWeight: FontWeight.bold, fontSize: 32.0),
-              maxLines: 3,
+              maxLines: 1,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
             ),
+          ),
+          trailing: Text(
+            story.url.trim().isEmpty ? "No link provided" : "",
+            style: baseTextStyle.copyWith(color: CupertinoColors.systemGrey),
           ),
           transitionBetweenRoutes: true,
           backgroundColor: Colors.black,
