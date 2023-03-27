@@ -2,75 +2,70 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hn/models/storyModel.dart';
 import 'package:hn/widgets/baseText.dart';
+import 'package:hn/widgets/commentItem.dart';
 
 class StoryScreen extends StatefulWidget {
-  const StoryScreen({super.key});
+  final Story story;
+
+  const StoryScreen({super.key, required this.story});
 
   @override
   State<StatefulWidget> createState() => StoryScreenState();
 }
 
 class StoryScreenState extends State<StoryScreen> {
+  late Story story;
+
+  @override
+  void initState() {
+    super.initState();
+
+    story = widget.story;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        child: Column(
-      children: [
-        Expanded(
-            child: CustomScrollView(
-          physics: BouncingScrollPhysics(),
-          slivers: [
-            CupertinoSliverNavigationBar(
-              previousPageTitle: "Top Stories",
-              largeTitle: CupertinoButton(
-                child: Text(
-                  "Bard: an AI by Google",
-                  style: baseTextStyle.copyWith(
-                      fontWeight: FontWeight.bold, fontSize: 32.0),
-                  maxLines: 3,
-                ),
-                onPressed: () {},
-                padding: EdgeInsets.zero,
-                alignment: Alignment.centerLeft,
-              ),
-              transitionBetweenRoutes: true,
-              backgroundColor: Colors.black,
+        child: Column(children: [
+      Expanded(
+          child: CustomScrollView(physics: BouncingScrollPhysics(), slivers: [
+        CupertinoSliverNavigationBar(
+          largeTitle: CupertinoButton(
+            onPressed: () {},
+            padding: EdgeInsets.zero,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              story.title,
+              style: baseTextStyle.copyWith(
+                  fontWeight: FontWeight.bold, fontSize: 32.0),
+              maxLines: 3,
             ),
-            CupertinoSliverRefreshControl(),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) => Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 18.0),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Google 3 hours ago",
-                                  style: baseTextStyle.copyWith(
-                                      color: CupertinoColors.systemGrey2,
-                                      fontSize: 14.0),
-                                ),
-                                Text(
-                                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis nunc at dignissim aliquet. Suspendisse gravida eros id mi vestibulum scelerisque. Suspendisse potenti. Ut euismod lobortis leo ac sagittis. Praesent porttitor fringilla nulla, ut vestibulum felis. Cras aliquet justo velit, ac ornare nibh placerat a. Aliquam sed gravida mi. ",
-                                  style: baseTextStyle.copyWith(
-                                      fontSize: 18.4, height: 1.3),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                                ),
-                                CupertinoButton(
-                                  child: Text("View replies", style: TextStyle(fontSize: 16.0),),
-                                  onPressed: () {},
-                                  padding: EdgeInsets.zero,
-                                )
-                              ]),
-                        ),
-                    childCount: 2))
-          ],
-        ))
-      ],
-    ));
+          ),
+          transitionBetweenRoutes: true,
+          backgroundColor: Colors.black,
+        ),
+        CupertinoSliverRefreshControl(onRefresh: () async {
+          try {
+            final fetchedStory = await fetchStory(id: story.id);
+
+            if (fetchedStory == null) {
+              throw Exception("Cannot find the story");
+            }
+
+            story = fetchedStory;
+          } catch (e) {
+            // todo: add some dialog to show there was en error while fetching a story
+          }
+        }),
+        SliverList(
+            delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) =>
+                    CommentItem(commentId: story.commentIds[index]),
+                childCount: story.commentIds.length)),
+        SliverFillRemaining(),
+      ]))
+    ]));
   }
 }

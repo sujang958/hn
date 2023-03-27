@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:hn/models/constants.dart';
 import 'package:http/http.dart' as http;
-
-const topStoriesUri = 'https://hacker-news.firebaseio.com/v0/topstories.json';
-const storyUri = 'https://hacker-news.firebaseio.com/v0/item';
-const asksUri = 'https://hacker-news.firebaseio.com/v0/askstories.json';
 
 class Story {
   final String type = "story";
@@ -15,9 +12,10 @@ class Story {
   final String url;
   final String content;
   final String by;
+  final int id;
 
   const Story({
-    required id,
+    required this.id,
     required this.by,
     required time,
     required this.commentIds,
@@ -55,7 +53,7 @@ Future<List<int>> fetchTopStories({int? count}) async {
 }
 
 Future<Story?> fetchStory({required int id}) async {
-  final storyResponse = await http.get(Uri.parse('$storyUri/$id.json'));
+  final storyResponse = await http.get(Uri.parse('$itemUri/$id.json'));
 
   if (storyResponse.statusCode >= 400) {
     throw Exception("Can't fetch stories!");

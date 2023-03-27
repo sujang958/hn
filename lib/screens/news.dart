@@ -35,7 +35,6 @@ class NewsScreenState extends State<NewsScreen> {
                   "Top Stories",
                   style: baseTextStyle.copyWith(
                     fontVariations: [FontVariation('wght', 700)],
-                    letterSpacing: 0.8
                   ),
                 ),
               ),
