@@ -8,11 +8,12 @@ class Comment {
   final String type = "comment";
   final List<int> replyIds;
   final int time;
-  final String text;
   final String by;
   final int id;
 
-  const Comment({
+  String text;
+
+  Comment({
     required this.id,
     required this.by,
     required this.time,
@@ -39,6 +40,9 @@ Future<Comment?> fetchComment({required int id}) async {
   }
 
   final json = jsonDecode(storyResponse.body);
+  if (json == null) {
+    return null;
+  }
   if (json['deleted'] != null && json['deleted'] == true) {
     return null;
   }
