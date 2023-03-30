@@ -40,7 +40,9 @@ class NewsScreenState extends State<NewsScreen> {
               ),
               CupertinoSliverRefreshControl(
                 onRefresh: () async {
-                  ids = fetchTopStories();
+                  setState(() {
+                    ids = fetchTopStories();
+                  });
                 },
               ),
               SliverPadding(padding: EdgeInsets.symmetric(vertical: 6.0)),

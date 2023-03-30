@@ -110,16 +110,19 @@ class StoryScreenState extends State<StoryScreen> {
         throw Exception("Cannot find the story");
       }
 
-      currentFocusedReply = null;
-      replies = {};
-      story = fetchedStory;
+      setState(() {
+        currentFocusedReply = null;
+        replies = {};
+        story = fetchedStory;
+      });
     } catch (e) {
       // todo: add some dialog to show there was en error while fetching a story
     }
   }
 
   void animateScrollTo(double offset) {
-    scrollController.animateTo(offset, duration: Duration(milliseconds: 200), curve: Curves.bounceInOut);
+    scrollController.animateTo(offset,
+        duration: Duration(milliseconds: 200), curve: Curves.bounceInOut);
   }
 
   @override
@@ -133,9 +136,9 @@ class StoryScreenState extends State<StoryScreen> {
                     onPressed: () {
                       setState(() {
                         currentFocusedReply = null;
-                        /// todo; fix this (not fast rendering so does not sscroll to right offset)
-                        /// use stack to stack reply view
-                        animateScrollTo(previousScrollOffset);
+                        Future.delayed(Duration(milliseconds: 300)).then((_) {
+                          animateScrollTo(previousScrollOffset);
+                        });
                       });
                     },
                     backgroundColor: Colors.white,
@@ -212,7 +215,8 @@ class StoryScreenState extends State<StoryScreen> {
                             commentId: commentId,
                             onReplyButtonTap: () {
                               _getReplies(commentId);
-                              previousScrollOffset = (scrollController.offset).toDouble();
+                              previousScrollOffset =
+                                  (scrollController.offset).toDouble();
                               animateScrollTo(0);
                               setState(() {
                                 currentFocusedReply = commentId;
