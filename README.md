@@ -1,3 +1,7 @@
-# hn
+# HN
 
-Still work in progress
+> An HackerNews app with comments & replies
+
+ 🚧 Work in Progress 🚧
+ 
+ Made with ❤️ and Flutter
