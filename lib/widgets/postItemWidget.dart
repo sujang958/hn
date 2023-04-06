@@ -1,26 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hn/models/storyModel.dart';
-import 'package:hn/screens/story.dart';
+import 'package:hn/models/item.dart';
+import 'package:hn/screens/post.dart';
 import 'package:hn/widgets/baseText.dart';
 
-class StoryItem extends StatefulWidget {
-  final int storyId;
+class PostItemWidget extends StatefulWidget {
+  final int postItemId;
 
-  const StoryItem({super.key, required this.storyId});
+  const PostItemWidget({super.key, required this.postItemId});
 
   @override
-  State<StatefulWidget> createState() => StoryItemState();
+  State<StatefulWidget> createState() => PostItemWidgetState();
 }
 
-class StoryItemState extends State<StoryItem> {
-  late Future<Story?> story;
+class PostItemWidgetState extends State<PostItemWidget> {
+  late Future<PostItem?> postItem;
 
   @override
   void initState() {
     super.initState();
 
-    story = fetchStory(id: widget.storyId);
+    postItem = fetchPostItem(id: widget.postItemId);
   }
 
   @override
@@ -31,7 +31,7 @@ class StoryItemState extends State<StoryItem> {
           return const SizedBox.shrink();
         }
 
-        final story = snapshot.data as Story;
+        final story = snapshot.data as PostItem;
 
         return Material(
             child: CupertinoListTile(
@@ -40,8 +40,7 @@ class StoryItemState extends State<StoryItem> {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) =>
-                        StoryScreen(story: story)));
+                    builder: (context) => PostItemScreen(postItem: story)));
           },
           backgroundColor: Colors.black,
           title: Text(
@@ -53,13 +52,13 @@ class StoryItemState extends State<StoryItem> {
                 fontSize: 22.0, fontWeight: FontWeight.bold, height: 1.4),
           ),
           subtitle: Text(
-            "${Uri.parse(story.url).host}\n${story.commentIds.length} comments | ${story.score} points | posted by ${story.by}",
+            "${story.url != null ? "${Uri.parse(story.url as String).host}\n" : ""}${story.commentIds != null ? "${story.commentIds?.length as int} comments" : ""} | ${story.score} points | posted by ${story.by}",
             maxLines: 3,
-            style: TextStyle(fontSize: 14.5),
+            style: const TextStyle(fontSize: 14.5),
           ),
         ));
       }),
-      future: story,
+      future: postItem,
     );
   }
 }

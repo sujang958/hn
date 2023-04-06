@@ -1,31 +1,28 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hn/models/commentModel.dart';
-import 'package:hn/models/storyModel.dart';
+import 'package:hn/models/item.dart';
 import 'package:hn/widgets/baseText.dart';
 import 'package:hn/widgets/commentItem.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
-class StoryScreen extends StatefulWidget {
-  final Story story;
+class PostItemScreen extends StatefulWidget {
+  final PostItem postItem;
 
-  const StoryScreen({super.key, required this.story});
+  const PostItemScreen({super.key, required this.postItem});
 
   @override
-  State<StatefulWidget> createState() => StoryScreenState();
+  State<StatefulWidget> createState() => PostItemScreenState();
 }
 
-class StoryScreenState extends State<StoryScreen> {
-  late Story story;
+class PostItemScreenState extends State<PostItemScreen> {
+  late PostItem postItem;
 
   final scrollController = ScrollController();
 
-  int? currentFocusedReply = null;
+  int? currentFocusedReply;
   Map<int, List<Comment>> replies = {};
 
   double previousScrollOffset = 0.0;
@@ -34,11 +31,15 @@ class StoryScreenState extends State<StoryScreen> {
   void initState() {
     super.initState();
 
-    story = widget.story;
+    postItem = widget.postItem;
   }
 
   Future<bool> _recursionReply(
       Comment topComment, Comment comment, List<int> replyIds) async {
+    setState(() {
+      replies[topComment.id] = [];
+    });
+
     for (final replyId in replyIds) {
       final reply = await fetchComment(id: replyId);
       if (reply == null) continue;
@@ -76,7 +77,13 @@ class StoryScreenState extends State<StoryScreen> {
 
   Future<void> _getAllReplies() async {
     final List<Comment> comments = [];
-    for (final commentId in story.commentIds) {
+    final commentIds = postItem.commentIds;
+
+    if (commentIds == null) {
+      throw Exception("No Comments");
+    }
+
+    for (final commentId in commentIds) {
       final comment = await fetchComment(id: commentId);
       if (comment == null) continue;
       comments.add(comment);
@@ -86,25 +93,11 @@ class StoryScreenState extends State<StoryScreen> {
       for (final comment in comments)
         _recursionReply(comment, comment, comment.replyIds)
     ]);
-
-    // for (final replyEntry in replies.entries) {
-    //   final replyComments = replies[replyEntry.key];
-    //   if (replyComments == null) continue;
-    //   replyComments.sort((a, b) {
-    //     return a.time.compareTo(b.time);
-    //   });
-    // }
-
-    // comments.forEach((element) {
-    //   print(
-    //       "${element.text.split(" ")[0]} ${replies[element.id]?.map((e) => e.text.substring(0, min(20, e.text.length - 1))).join(";\n")} ${replies[element.id]?.length} ${replies[element.id]?.toSet().length}");
-    //   print("______ \n\n\n");
-    // });
   }
 
   void _refreshStory() async {
     try {
-      final fetchedStory = await fetchStory(id: story.id);
+      final fetchedStory = await fetchPostItem(id: postItem.id);
 
       if (fetchedStory == null) {
         throw Exception("Cannot find the story");
@@ -113,7 +106,7 @@ class StoryScreenState extends State<StoryScreen> {
       setState(() {
         currentFocusedReply = null;
         replies = {};
-        story = fetchedStory;
+        postItem = fetchedStory;
       });
     } catch (e) {
       // todo: add some dialog to show there was en error while fetching a story
@@ -159,13 +152,16 @@ class StoryScreenState extends State<StoryScreen> {
                       middle: GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () async {
-                            _getAllReplies();
-                            if (!await launchUrl(Uri.parse(story.url))) {
+                            if (postItem.url == null) {
+                              return;
+                            }
+                            if (!await launchUrl(
+                                Uri.parse(postItem.url as String))) {
                               return;
                             }
                           },
                           child: Text(
-                            story.title,
+                            postItem.title,
                             style: baseTextStyle.copyWith(
                                 fontWeight: FontWeight.bold),
                             maxLines: 1,
@@ -175,7 +171,9 @@ class StoryScreenState extends State<StoryScreen> {
                           horizontal: 18.0, vertical: 0.0),
                       largeTitle: SizedBox.shrink(),
                       trailing: Text(
-                        story.url.trim().isEmpty ? "No link provided" : "",
+                        (postItem.url ?? "").trim().isEmpty
+                            ? "No link provided"
+                            : "",
                         style: baseTextStyle.copyWith(
                             color: CupertinoColors.systemGrey),
                       ),
@@ -188,7 +186,11 @@ class StoryScreenState extends State<StoryScreen> {
                     SliverToBoxAdapter(
                       child: CupertinoButton(
                         onPressed: () async {
-                          if (!await launchUrl(Uri.parse(story.url))) {
+                          if (postItem.url == null) {
+                            return;
+                          }
+                          if (!await launchUrl(
+                              Uri.parse(postItem.url as String))) {
                             return;
                           }
                         },
@@ -196,7 +198,7 @@ class StoryScreenState extends State<StoryScreen> {
                             left: 18.0, right: 18.0, bottom: 48.0),
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          story.title,
+                          postItem.title,
                           style: baseTextStyle.copyWith(
                               fontWeight: FontWeight.bold, fontSize: 33.0),
                           maxLines: 8,
@@ -205,11 +207,17 @@ class StoryScreenState extends State<StoryScreen> {
                         ),
                       ),
                     ),
-                    if (currentFocusedReply == null)
+                    if (currentFocusedReply == null &&
+                        postItem.commentIds != null)
                       SliverList(
                           delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) {
-                        final commentId = story.commentIds[index];
+                        final commentId = postItem.commentIds?[index];
+
+                        if (commentId == null) {
+                          postItem.commentIds?.removeAt(index);
+                          return SizedBox.shrink();
+                        }
 
                         return CommentItem(
                             commentId: commentId,
@@ -222,7 +230,7 @@ class StoryScreenState extends State<StoryScreen> {
                                 currentFocusedReply = commentId;
                               });
                             });
-                      }, childCount: story.commentIds.length))
+                      }, childCount: postItem.commentIds?.length as int))
                     else if (replies.containsKey(currentFocusedReply))
                       SliverList(
                           delegate: SliverChildBuilderDelegate(

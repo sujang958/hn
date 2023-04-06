@@ -62,13 +62,15 @@ class MainWidget extends StatelessWidget {
             tabBuilder: (context, index) {
               switch (index) {
                 case 0:
-                  return const NewsScreen();
+                  return const NewsScreen(title: "Top Stories", type: "story");
                 case 1:
-                  return const NewsScreen();
+                  return const NewsScreen(title: "Ask HN", type: "ask");
                 case 2:
-                  return const NewsScreen();
+                  return const NewsScreen(title: "Show HN", type: "show");
+                case 3:
+                  return const NewsScreen(title: "Jobs", type: "job");
                 default:
-                  return const NewsScreen();
+                  return const NewsScreen(title: "Top Stories", type: "story");
               }
             }));
   }

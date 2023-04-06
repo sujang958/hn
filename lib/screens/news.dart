@@ -4,19 +4,45 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hn/models/storyModel.dart';
+import 'package:hn/models/constants.dart';
+import 'package:hn/models/list.dart';
 import 'package:hn/widgets/baseText.dart';
-import 'package:hn/widgets/storyItem.dart';
+import 'package:hn/widgets/postItemWidget.dart';
+
+Future<List<int>> conditionalFetchStories(String type) async {
+  switch (type) {
+    case "story":
+      return fetchList(url: topStoriesUri);
+    case "job":
+      return fetchList(url: jobStoriesUri);
+    case "ask":
+      return fetchList(url: askStoriesUri);
+    case "show":
+      return fetchList(url: showStoriesUri);
+    default:
+      return fetchList(url: topStoriesUri);
+  }
+}
 
 class NewsScreen extends StatefulWidget {
-  const NewsScreen({super.key});
+  final String type; // can be story, job, ask, show
+  final String title;
+
+  const NewsScreen({super.key, required this.type, required this.title});
 
   @override
   State<StatefulWidget> createState() => NewsScreenState();
 }
 
 class NewsScreenState extends State<NewsScreen> {
-  Future<List<int>> ids = fetchTopStories(count: 20);
+  late Future<List<int>> ids;
+
+  @override
+  void initState() {
+    super.initState();
+
+    ids = conditionalFetchStories(widget.type);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +58,7 @@ class NewsScreenState extends State<NewsScreen> {
                 transitionBetweenRoutes: true,
                 backgroundColor: Colors.black,
                 largeTitle: Text(
-                  "Top Stories",
+                  widget.title,
                   style: baseTextStyle.copyWith(
                     fontVariations: [FontVariation('wght', 700)],
                   ),
@@ -41,7 +67,7 @@ class NewsScreenState extends State<NewsScreen> {
               CupertinoSliverRefreshControl(
                 onRefresh: () async {
                   setState(() {
-                    ids = fetchTopStories();
+                    ids = conditionalFetchStories(widget.type);
                   });
                 },
               ),
@@ -67,8 +93,8 @@ class NewsScreenState extends State<NewsScreen> {
 
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) => StoryItem(
-                        storyId: data[index],
+                      (BuildContext context, int index) => PostItemWidget(
+                        postItemId: data[index],
                       ),
                       childCount: data.length,
                     ),
