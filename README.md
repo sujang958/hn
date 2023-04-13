@@ -13,7 +13,8 @@
 
 ## Screenshots
 
-🚧 Work in Progress 🚧
+<img src="./screenshot.png" style="object-fit: contain;" width="24%">
+
 
 
 ## Contributing
