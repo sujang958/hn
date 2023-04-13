@@ -170,13 +170,6 @@ class PostItemScreenState extends State<PostItemScreen> {
                       padding: EdgeInsetsDirectional.symmetric(
                           horizontal: 18.0, vertical: 0.0),
                       largeTitle: SizedBox.shrink(),
-                      trailing: Text(
-                        (postItem.url ?? "").trim().isEmpty
-                            ? "No link provided"
-                            : "",
-                        style: baseTextStyle.copyWith(
-                            color: CupertinoColors.systemGrey),
-                      ),
                       transitionBetweenRoutes: true,
                       backgroundColor: Colors.black,
                     ),
@@ -207,6 +200,19 @@ class PostItemScreenState extends State<PostItemScreen> {
                         ),
                       ),
                     ),
+                    if (postItem.content != null)
+                      SliverToBoxAdapter(
+                        child: StatelessCommentItem(
+                          comment: Comment(
+                              id: -1,
+                              by: postItem.by,
+                              time: postItem.time,
+                              replyIds: [],
+                              text: postItem.content as String),
+                          onReplyButtonTap: () {},
+                          replyButtonShown: false,
+                        ),
+                      ),
                     if (currentFocusedReply == null &&
                         postItem.commentIds != null)
                       SliverList(
