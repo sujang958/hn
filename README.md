@@ -13,7 +13,7 @@
 
 ## Screenshots
 
-<img src="./screenshot.png" style="object-fit: contain;" width="24%">
+<img src="./screenshot.png" style="object-fit: contain;" width="30%">
 
 
 
