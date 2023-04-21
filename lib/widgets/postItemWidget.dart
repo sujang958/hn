@@ -27,12 +27,6 @@ class PostItemWidgetState extends State<PostItemWidget> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       builder: ((context, snapshot) {
-        print(snapshot.hasError);
-        print(snapshot.data);
-        if (snapshot.hasError) {
-          print(snapshot.error);
-        }
-
         if (snapshot.hasError || !snapshot.hasData) {
           return const SizedBox.shrink();
         }

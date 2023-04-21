@@ -49,6 +49,9 @@ Future<Comment?> fetchComment({required int id}) async {
   if (json["type"] != "comment") {
     return null;
   }
-
+  if (json["text"].toString().trim().isEmpty) {
+    return null;
+  }
+  
   return Comment.fromJson(json);
 }

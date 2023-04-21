@@ -200,7 +200,8 @@ class PostItemScreenState extends State<PostItemScreen> {
                         ),
                       ),
                     ),
-                    if (postItem.content != null)
+                    if (postItem.content != null &&
+                        (postItem.content ?? "").trim().isNotEmpty)
                       SliverToBoxAdapter(
                         child: StatelessCommentItem(
                           comment: Comment(
@@ -221,7 +222,9 @@ class PostItemScreenState extends State<PostItemScreen> {
                         final commentId = postItem.commentIds?[index];
 
                         if (commentId == null) {
-                          postItem.commentIds?.removeAt(index);
+                          setState(() {
+                            postItem.commentIds?.removeAt(index);
+                          });
                           return SizedBox.shrink();
                         }
 
