@@ -54,9 +54,6 @@ Future<PostItem?> fetchPostItem({required int id}) async {
   if (json['deleted'] != null && json['deleted'] == true) {
     return null;
   }
-  if (json["type"] != "story") {
-    return null;
-  }
 
   return PostItem.fromJson(json);
 }
