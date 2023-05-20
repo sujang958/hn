@@ -2,10 +2,13 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hn/models/commentModel.dart';
 import 'package:hn/models/item.dart';
+import 'package:hn/models/readingList.dart';
 import 'package:hn/widgets/baseText.dart';
 import 'package:hn/widgets/commentItem.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostItemScreen extends StatefulWidget {
@@ -172,6 +175,21 @@ class PostItemScreenState extends State<PostItemScreen> {
                       largeTitle: SizedBox.shrink(),
                       transitionBetweenRoutes: true,
                       backgroundColor: Colors.black,
+                      trailing: CupertinoButton(
+                          child: Icon(CupertinoIcons.add_circled),
+                          onPressed: () async {
+                            final id = postItem.id.toString();
+                            if (await isAddedToReadlingList(id)) {
+                              await removeFromReadingList(id);
+
+                              Fluttertoast.showToast(msg: "Removed from your reading list");
+                            } else {
+                              await addToReadingList(id);
+
+                              Fluttertoast.showToast(
+                                  msg: "Added to your reading list");
+                            }
+                          }),
                     ),
                     CupertinoSliverRefreshControl(onRefresh: () async {
                       _refreshStory();
