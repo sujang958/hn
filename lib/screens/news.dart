@@ -63,6 +63,12 @@ class NewsScreenState extends State<NewsScreen> {
                     fontVariations: [FontVariation('wght', 700)],
                   ),
                 ),
+                trailing: CupertinoButton(
+                  child: Icon(CupertinoIcons.square_list),
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/reading-list");
+                  },
+                ),
               ),
               CupertinoSliverRefreshControl(
                 onRefresh: () async {

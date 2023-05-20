@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hn/screens/news.dart';
+import 'package:hn/screens/readingList.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,11 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           scaffoldBackgroundColor: CupertinoColors.black,
         ),
-        home: const MainWidget());
+        initialRoute: "/",
+        routes: {
+          "/": (context) => const MainWidget(),
+          "/reading-list": (context) => const ReadingListWidget(),
+        },);
   }
 }
 
