@@ -7,7 +7,7 @@
 - [x] List hacker news posts
 - [x] List AskHN posts
 - [x] List ShowHN posts
-- [ ] List job posts
+- [x] List job posts
 - [x] View posts' comments and replies
 - [ ] Create a reading list
 
