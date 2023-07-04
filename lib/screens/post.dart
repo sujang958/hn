@@ -8,7 +8,6 @@ import 'package:hn/models/item.dart';
 import 'package:hn/models/readingList.dart';
 import 'package:hn/widgets/baseText.dart';
 import 'package:hn/widgets/commentItem.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostItemScreen extends StatefulWidget {
@@ -27,6 +26,7 @@ class PostItemScreenState extends State<PostItemScreen> {
 
   int? currentFocusedReply;
   Map<int, List<Comment>> replies = {};
+  bool? inReadingList = null;
 
   double previousScrollOffset = 0.0;
 
@@ -35,6 +35,8 @@ class PostItemScreenState extends State<PostItemScreen> {
     super.initState();
 
     postItem = widget.postItem;
+    isAddedToReadlingList(postItem.id.toString())
+        .then((value) => setState(() => inReadingList = value));
   }
 
   Future<bool> _recursionReply(
@@ -175,11 +177,18 @@ class PostItemScreenState extends State<PostItemScreen> {
                       largeTitle: SizedBox.shrink(),
                       transitionBetweenRoutes: true,
                       backgroundColor: Colors.black,
-                      trailing: CupertinoButton(
-                          child: Icon(CupertinoIcons.add_circled),
+                      trailing: inReadingList != null
+                          ? CupertinoButton(
+                              child: Icon(inReadingList as bool
+                                  ? CupertinoIcons.minus_circle
+                                  : CupertinoIcons.add_circled),
                           onPressed: () async {
+                                setState(() {
+                                  inReadingList = null;
+                                });
                             final id = postItem.id.toString();
-                            if (await isAddedToReadlingList(id)) {
+                                final result = await isAddedToReadlingList(id);
+                                if (result) {
                               await removeFromReadingList(id);
 
                               Fluttertoast.showToast(msg: "Removed from your reading list");
@@ -189,7 +198,11 @@ class PostItemScreenState extends State<PostItemScreen> {
                               Fluttertoast.showToast(
                                   msg: "Added to your reading list");
                             }
-                          }),
+                                setState(() {
+                                  inReadingList = !result;
+                                });
+                              })
+                          : CupertinoActivityIndicator(),
                     ),
                     CupertinoSliverRefreshControl(onRefresh: () async {
                       _refreshStory();
