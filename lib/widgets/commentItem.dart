@@ -84,19 +84,19 @@ class StatelessCommentItem extends StatelessWidget {
                   data: comment.text,
                   style: {
                     "*": Style(
-                        padding: EdgeInsets.zero,
-                        margin: EdgeInsets.zero,
-                        fontSize: FontSize.rem(1.18),
-                        lineHeight: LineHeight.number(1.15)),
+                        padding: HtmlPaddings.zero,
+                        margin: Margins.zero,
+                        fontSize: FontSize(16.0),
+                        lineHeight: LineHeight.number(1.05)),
                     "pre": Style(
                         backgroundColor: CupertinoColors.darkBackgroundGray,
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(vertical: 10.0),
-                        padding: const EdgeInsets.symmetric(
+                        width: Width(double.infinity),
+                        margin: Margins.symmetric(vertical: 10.0),
+                        padding: HtmlPaddings.symmetric(
                             vertical: 4.0, horizontal: 0.2)),
                     "anchor": Style(textDecoration: TextDecoration.none),
                   },
-                  onLinkTap: (url, context, attributes, element) {
+                  onLinkTap: (url, _, __) {
                     if (url != null) {
                       launchUrl(Uri.parse(url));
                     }
